@@ -1,0 +1,30 @@
+import rclpy
+from rclpy.node import Node
+from std_msgs.msg import Int8
+import RPi.GPIO as GPIO  
+
+class RaspRelais(Node):
+    def __init__(self):
+        super().__init__("Node_relais_steuern")
+        self.my_sub=self.create_subscription(Int8,"/relais",self.callback_relaisstr)
+        self.mymsg
+        GPIO.setmode(GPIO.BCM)
+        GPIO.setup(14, GPIO.OUT) 
+    def callback_relaisstr(self,msg):
+        self.mymsg = msg.data
+        if self.mymsg ==0:
+            GPIO.output(14,GPIO.LOW)
+            print("das geht nicht")
+        elif self.mymsg ==1:
+            GPIO.output(14,GPIO.HIGH)
+            print("das geht")
+        
+
+def main(args=None):
+    rclpy.init(args=args)
+    myrelais = RaspRelais()
+    
+    rclpy.spin(myrelais)
+    rclpy.shutdown()
+
+
