@@ -6,11 +6,15 @@ import RPi.GPIO as GPIO
 class RaspRelais(Node):
     def __init__(self):
         super().__init__("Node_relais_steuern")
-        self.my_sub=self.create_subscription(Int8,"/relais",self.callback_relaisstr)
-        self.mymsg
+        self.my_sub=self.create_subscription(Int8,"/relais",self.callback_relaisstr,10)
+        self.mymsg=None
+
+    def my_config(self):
         GPIO.setmode(GPIO.BCM)
-        GPIO.setup(14, GPIO.OUT) 
+        GPIO.setup(14, GPIO.OUT)
+
     def callback_relaisstr(self,msg):
+        self.my_config()
         self.mymsg = msg.data
         if self.mymsg ==0:
             GPIO.output(14,GPIO.LOW)
@@ -18,7 +22,10 @@ class RaspRelais(Node):
         elif self.mymsg ==1:
             GPIO.output(14,GPIO.HIGH)
             print("das geht")
-        
+        else:
+            print("init")
+            GPIO.output(14,GPIO.LOW)
+        GPIO.cleanup()
 
 def main(args=None):
     rclpy.init(args=args)
@@ -27,4 +34,5 @@ def main(args=None):
     rclpy.spin(myrelais)
     rclpy.shutdown()
 
-
+if __name__=="__main__":
+    main()
